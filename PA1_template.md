@@ -7,9 +7,29 @@ output:
 
 ## Loading and preprocessing the data
 
-```{r load-data, echo=TRUE}
-library(dplyr)
 
+```r
+library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 # Unzip and read the CSV file
 unzip("activity.zip")
 activity <- read.csv("activity.csv")
@@ -21,9 +41,20 @@ activity$date <- as.Date(activity$date)
 head(activity)
 ```
 
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
 ## What is mean total number of steps taken per day?
 
-```{r total-steps, echo=TRUE}
+
+```r
 # Summarize total steps taken per day, ignoring NA values
 steps_per_day <- activity %>%
   filter(!is.na(steps)) %>%
@@ -36,19 +67,35 @@ hist(steps_per_day$total_steps,
      xlab = "Steps",
      col = "skyblue",
      border = "black")
+```
 
+![](PA1_template_files/figure-html/total-steps-1.png)<!-- -->
+
+```r
 # Calculate mean and median
 mean_steps <- mean(steps_per_day$total_steps)
 median_steps <- median(steps_per_day$total_steps)
 
 # Print results
 mean_steps
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median_steps
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 
-```{r daily-pattern, echo=TRUE}
+
+```r
 # Average steps per interval across all days
 avg_interval_steps <- activity %>%
   filter(!is.na(steps)) %>%
@@ -63,19 +110,37 @@ plot(avg_interval_steps$interval, avg_interval_steps$mean_steps,
      xlab = "5-Minute Interval",
      ylab = "Average Number of Steps",
      main = "Average Daily Activity Pattern")
+```
 
+![](PA1_template_files/figure-html/daily-pattern-1.png)<!-- -->
+
+```r
 # Interval with max average steps
 max_interval <- avg_interval_steps[which.max(avg_interval_steps$mean_steps), ]
 max_interval
 ```
 
+```
+## # A tibble: 1 × 2
+##   interval mean_steps
+##      <int>      <dbl>
+## 1      835       206.
+```
+
 ## Imputing missing values
 
-```{r imputation, echo=TRUE}
+
+```r
 # Count total missing values
 na_total <- sum(is.na(activity$steps))
 na_total
+```
 
+```
+## [1] 2304
+```
+
+```r
 # Fill NA with mean for that interval
 interval_means <- activity %>%
   group_by(interval) %>%
@@ -92,7 +157,13 @@ activity_filled <- activity_filled %>%
 
 # Confirm no more NAs
 sum(is.na(activity_filled$steps))
+```
 
+```
+## [1] 0
+```
+
+```r
 # Histogram of total steps after filling
 total_steps_filled <- activity_filled %>%
   group_by(date) %>%
@@ -103,18 +174,34 @@ hist(total_steps_filled$total_steps,
      main = "Total Steps per Day (After Imputation)",
      xlab = "Total Steps",
      breaks = 20)
+```
 
+![](PA1_template_files/figure-html/imputation-1.png)<!-- -->
+
+```r
 # New mean and median
 mean_filled <- mean(total_steps_filled$total_steps)
 median_filled <- median(total_steps_filled$total_steps)
 
 mean_filled
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median_filled
+```
+
+```
+## [1] 10766.19
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r weekdays-vs-weekends, echo=TRUE}
+
+```r
 # Add weekday/weekend label
 activity_filled$day_type <- ifelse(weekdays(activity_filled$date) %in% 
                                    c("Saturday", "Sunday"), "weekend", "weekday")
@@ -134,3 +221,5 @@ xyplot(avg_steps ~ interval | day_type, data = avg_by_daytype,
        ylab = "Average Number of Steps",
        main = "Average Steps: Weekday vs Weekend Patterns")
 ```
+
+![](PA1_template_files/figure-html/weekdays-vs-weekends-1.png)<!-- -->
